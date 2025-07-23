@@ -13,21 +13,21 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/Lisp-Stat/IPS">
+  <a href="https://github.com/Lisp-Stat/cl-jupyter-image">
     <img src="https://lisp-stat.dev/images/stats-image.svg" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">Lisp-Stat Examples</h3>
+  <h3 align="center">Common Lisp Jupyter Stack</h3>
 
   <p align="center">
-	From the book <em>Introduction to the Practice of Statistics</em>
+	An OCI Jupyter Lab image for statistical analysis with Common Lisp</em>
 	<br />
-    <a href="https://lisp-stat.dev/docs/examples"><strong>Explore the docs »</strong></a>
+    <a href="https://lisp-stat.github.io/IPS9/"><strong>Example analysis »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Lisp-Stat/IPS/issues">Report Bug</a>
+    <a href="https://github.com/Lisp-Stat/cl-jupyter-image/issues">Report Bug</a>
     ·
-    <a href="https://github.com/Lisp-Stat/IPS/issues">Request Feature</a>
+    <a href="https://github.com/Lisp-Stat/cl-jupyter-image/issues">Request Feature</a>
   </p>
 </p>
 
@@ -46,13 +46,14 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
+        <li><a href="#run-locally-with-docker">Run locally with docker</a></li>
+        <li><a href="#run-in-a-devcontainer">Run in a devcontainer</a></li>
+        <li><a href="#run-on-the-cloud">Run on the cloud</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li><a href="#building-an-image">Building an image</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
-	<li><a href="#resources">Resources</a></li>
+    <li><a href="#resources">Resources</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -64,103 +65,121 @@
 <!-- ABOUT THE PROJECT -->
 ## About the Project
 
-  This repository contains worked Jupyter notebook examples from the book,
-  _Introduction to the Practice of Statistics_, ninth edition.
-
+This repository contains the source for an OCI (devcontainer/docker) image of a Jupyter notebook for statistical analysis.
 
 ### Built With
 
 * [Lisp-Stat](https://github.com/Lisp-Stat/lisp-stat)
 * [common-lisp-jupyter](https://github.com/yitzchak/common-lisp-jupyter)
+* [Jupyter Docker Stacks](https://jupyter-docker-stacks.readthedocs.io/en/latest/)
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these steps:
+A prebuilt version of this image can be found at:
 
-### Prerequisites
+`ghcr.io/lisp-stat/cl-jupyter`
 
-An ANSI Common Lisp implementation. Developed and tested with
-[SBCL](https://www.sbcl.org/) and
-[CCL](https://github.com/Clozure/ccl).
+This is the image URL you will use in a devcontainer.json or Docker file.
 
-### Installation
+To run the image you need tooling to run OCI images. These include:
 
-1. Install [common-lisp-jupyter](https://github.com/yitzchak/common-lisp-jupyter)
-1. Clone the repository
-   ```sh
-   cd ~/quicklisp/local-projects &&
-   git clone https://github.com/Lisp-Stat/IPS.git
-   ```
-2. Reset the ASDF source-registry to find the new system (from the REPL)
-   ```lisp
-   (asdf:clear-source-registry)
-   ```
-3. Load the system
-   ```lisp
-   (ql:quickload :ips)
-   ```
+* [Docker](https://github.com/docker/docker-ce) - Most popular container platform
+* [Podman](https://github.com/containers/podman) - Daemonless, rootless alternative to Docker
+* [containerd](https://github.com/containerd/containerd) - Industry-standard container runtime
+* [Lima](https://github.com/lima-vm/lima) - Linux VMs on macOS with container support
+* [Rancher Desktop](https://github.com/rancher-sandbox/rancher-desktop) - Desktop container management
+* [Colima](https://github.com/abiosoft/colima) - Container runtimes on macOS with minimal setup
+* [VS Code Dev Containers](https://github.com/microsoft/vscode-dev-containers) - Development environments in containers
+* [GitHub Codespaces](https://github.com/features/codespaces) - Cloud-based
 
-<!-- USAGE EXAMPLES -->
-## Usage
+### Run locally with docker
 
-  Run Jupyter-Lab in the IPS directory above. You should see the example notebooks.
+This image is based on a [Jupyter Docker Stacks](https://jupyter-docker-stacks.readthedocs.io/en/latest/) and you can find full documentation on [running a jupyter docker stack](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/running.html) there. Be certain to use the right image.
+
+```
+docker run -it -p 8888:8888 ghcr.io/lisp-stat/cl-jupyter
+
+# Entered start.sh with args: jupyter lab
+
+# ...
+
+#     To access the server, open this file in a browser:
+#         file:///home/jovyan/.local/share/jupyter/runtime/jpserver-7-open.html
+#     Or copy and paste one of these URLs:
+#         http://eca4aa01751c:8888/lab?token=d4ac9278f5f5388e88097a3a8ebbe9401be206cfa0b83099
+#         http://127.0.0.1:8888/lab?token=d4ac9278f5f5388e88097a3a8ebbe9401be206cfa0b83099
+```
+
+Pressing Ctrl-C twice shuts down the Server but leaves the container intact on disk for later restart or permanent deletion.  At the time of this writing (July 2025) the upstream (Jupyter Docker Stacks) images are migrating to Notebook 7 format and you may see warnings.  They can be ignored.
+
+### Run in a devcontainer
+
+A devcontainer.json file for working with CL-Jupyter looks like this: 
+
+```json
+{   
+	"name": "IPS9",
+  "image": "ghcr.io/lisp-stat/cl-jupyter",
+  // Use base images default CMD.
+	"overrideCommand": false,
+	// Forward Jupyter port locally, mark required.
+	"forwardPorts": [8888],
+	"portsAttributes": {
+		"8888": {
+			"label": "Jupyter",
+			"requireLocalPort": true,
+			"onAutoForward": "ignore"
+		}
+	},
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				"python.defaultInterpreterPath": "/opt/conda/bin/python"
+			},
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": ["ms-python.python", "ms-toolsai.jupyter"]
+		}
+    }
+}
+```
+
+To see an example in a production environment (modified from the above for some real-world constraints) see the [IPS9 worked examples repository](https://github.com/Lisp-Stat/IPS9).
 
 
-## VS Code vs. Jupyter Notebooks
-
-[common-lisp-jupyter](https://github.com/yitzchak/common-lisp-jupyter) (JupyterLab) and VS Code take different approaches to cell execution, and there isn't (yet) a good VS Code extension for Common Lisp.  If you run a notebook in VS Code you should set the cell language to 'clojure', which is the closest language for which VS Code does have support.  You'll lose some of the Common Lisp syntax highlighting, but the cells will run.  Here's a detailed explanation of the differences:
+### Run on the cloud
 
 
-### JupyterLab Approach
 
-- **No cell-level language identifiers** - cells don't have individual language metadata
-- **Kernel determines everything** - the notebook kernel (Python, R, Julia, Common Lisp, etc.) handles all code execution and language features
-- **Uniform syntax highlighting** - all code cells use the same syntax highlighting based on the kernel language
-- **Simple model** - one kernel = one language for the entire notebook
+<!-- BUILDING EXAMPLES -->
+## Building an image
 
-### VS Code Jupyter Support
+To build this image you will need to use the [devcontainer cli](https://github.com/devcontainers/cli).  Note that this image uses devcontainer features, and therefore cannot be built using standard OCI tools.  See [pre-building dev container images](https://code.visualstudio.com/docs/devcontainers/containers#_prebuilding-dev-container-images) for more information.
 
-- **Cell-level language metadata** - each cell can have its own language identifier
-- **Hybrid approach** - kernel handles execution, but cell language affects editor features
-- **Per-cell syntax highlighting** - each cell can have different syntax highlighting
-- **More complex** - allows mixed-language notebooks (though execution still goes through one kernel)
+The commands to build this image are:
 
-### Why VS Code Does This
+```shell
+cd <this directory>
+devcontainer build --workspace-folder . --image-name my-cl-jupyter:latest
+```
 
-VS Code's approach allows for:
+This builds a local image `my-cl-jupyter:latest` you can use. You'll want to replace the `--image-name` parameter with your own to avoid confusion.
 
-- **Better editor integration** - language servers, IntelliSense, error checking per cell
-- **Mixed content** - you could have SQL in one cell, Python in another (with appropriate kernels)
-- **Consistent editor experience** - same language features as regular files
-- **Flexibility** - syntax highlighting can differ from execution kernel
+If you want to tag and push your custom image to a registry for others to use:
 
-### The Trade-off
+```shell
+docker tag my-cl-jupyter:latest ghcr.io/username/cl-jupyter:latest
+docker push ghcr.io/username/cl-jupyter:latest
+```
 
-**JupyterLab's simpler approach:**
+Or build and push directly to a registry:
 
-- No language confusion - kernel = language
-- Consistent experience
-- No metadata overhead
-
-**VS Code's approach:**
-
-- More flexible and powerful
-- Can create confusion
-- Requires language metadata management
-
-### For Common Lisp 
-
-**In JupyterLab with a Common Lisp kernel:**
-
-- All cells automatically get Common Lisp syntax highlighting
-- No need to specify language per cell
-- Kernel handles everything
-
-**In VS Code:**
-
-- You need to set cell language to the closest syntax (Clojure)
-
+```shell
+devcontainer build --workspace-folder . --image-name ghcr.io/username/cl-jupyter:latest --push
+```
 
 
 
@@ -198,21 +217,21 @@ Distributed under the MS-PL License. See [LICENSE](LICENSE) for more information
 <!-- CONTACT -->
 ## Contact
 
-Project Link: [https://github.com/lisp-stat/IPS](https://github.com/Lisp-Stat/IPS)
+Project Link: [https://github.com/lisp-stat/cl-jupyter-image](https://github.com/Lisp-Stat/cl-jupyter-image)
 
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/lisp-stat/IPS.svg?style=for-the-badge
-[contributors-url]: https://github.com/lisp-stat/IPS/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/lisp-stat/IPS.svg?style=for-the-badge
-[forks-url]: https://github.com/lisp-stat/IPS/network/members
-[stars-shield]: https://img.shields.io/github/stars/lisp-stat/IPS.svg?style=for-the-badge
-[stars-url]: https://github.com/lisp-stat/IPS/stargazers
-[issues-shield]: https://img.shields.io/github/issues/lisp-stat/IPS.svg?style=for-the-badge
-[issues-url]: https://github.com/lisp-stat/IPS/issues
-[license-shield]: https://img.shields.io/github/license/lisp-stat/IPS.svg?style=for-the-badge
-[license-url]: https://github.com/lisp-stat/IPS/blob/master/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/lisp-stat/cl-jupyter-image.svg?style=for-the-badge
+[contributors-url]: https://github.com/lisp-stat/cl-jupyter-image/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/lisp-stat/cl-jupyter-image.svg?style=for-the-badge
+[forks-url]: https://github.com/lisp-stat/cl-jupyter-image/network/members
+[stars-shield]: https://img.shields.io/github/stars/lisp-stat/cl-jupyter-image.svg?style=for-the-badge
+[stars-url]: https://github.com/lisp-stat/cl-jupyter-image/stargazers
+[issues-shield]: https://img.shields.io/github/issues/lisp-stat/cl-jupyter-image.svg?style=for-the-badge
+[issues-url]: https://github.com/lisp-stat/cl-jupyter-image/issues
+[license-shield]: https://img.shields.io/github/license/lisp-stat/cl-jupyter-image.svg?style=for-the-badge
+[license-url]: https://github.com/lisp-stat/cl-jupyter-image/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/company/symbolics/
