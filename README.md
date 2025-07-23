@@ -151,6 +151,38 @@ To see an example in a production environment (modified from the above for some 
 
 
 ### Run on the cloud
+To run the image *from this respository* on Github code spaces you must also build it (otherwise there would be a circular reference, the repository can't both provide the source of the image and use the image).  The examples above used the prebuilt image at `ghcr.io/lisp-stat/cl-jupyter` and therefore load quickly.  If you want to *use* a cloud based notebook rather than build one, modify your devcontainer.json file to use the image (instead of the individual features that comprise the image) and follow the instructions below.  See the examples of [Introduction to the Practice of Statistics](https://github.com/Lisp-Stat/IPS9/) or the devcontainer example above for working examples of using (rather than building) this image for cloud use.
+
+Building the base image will take some time, so be patient.
+
+Click on the 'Code' button, as if you were going to clone the repo:
+
+<img width="1281" height="1000" alt="select-code" src="https://github.com/user-attachments/assets/45adebf6-bdc7-469e-825b-c0ae0edd2b03" />
+
+and select "Codespaces"
+
+<img width="1281" height="1000" alt="codespaces" src="https://github.com/user-attachments/assets/e81f83d6-3c13-4b21-8f3f-e04d6328c54a" />
+
+from the Dropdown menu, select ‘Open in Codespaces’. This will open the code in a cloud-based development environment.
+
+<img width="1281" height="1000" alt="create-codespace" src="https://github.com/user-attachments/assets/e97cf540-979e-44a7-917b-8ddc56a22197" />
+
+Wait for the code space to load.  This may take some time. Be sure to wait until the process is complete.  When it is finished, you will have a remote VS Code window.  If you like you can work with Jupyter notebooks from within, or you can launch Jupyter Lab to edit.  To use Jupyter lab, close the VS Code *tab* and go back to the repository page you were using above.  Now refresh the page (just to be sure) and click on the code -> codespaces button again.  This time you'll see your active codespaces and be able to select the editor by clicking on the three dots next to the codespace name:
+
+<img width="1380" height="1000" alt="select-dots" src="https://github.com/user-attachments/assets/57d73b6d-ea03-4b5e-860e-da6483c82b86" />
+
+From the Dropdown menu, select ‘Open in JupyterLab’ to start working an analysis in your the JupyterLab environment.
+
+<img width="1380" height="1000" alt="open-jupyter-lab" src="https://github.com/user-attachments/assets/e62fe433-2915-4373-a8b0-b198875f2bb3" />
+
+You will briefly see a 'setting up' screen.
+
+<img width="1380" height="1000" alt="setting-up-codespace" src="https://github.com/user-attachments/assets/4b7f3924-121f-4fd7-bb06-9e2a46e510a7" />
+
+And then the Jupyter Lab will open.
+
+<img width="1380" height="1000" alt="jupyter-lab" src="https://github.com/user-attachments/assets/757ee55c-329c-426e-b230-719199aa2060" />
+
 
 
 
