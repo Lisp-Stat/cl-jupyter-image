@@ -1,34 +1,19 @@
-{   
-	"name": "cl-jupyter",
-    "build": {
-		"dockerfile": "Dockerfile",
-		"options": ["--tag", "cl-jupyter:latest"]
-    },
-    "features": {
-        "ghcr.io/devcontainers/features/common-utils:2": {
-			"installZsh": "true",
-			"username": "jovyan", // Not sure if this is needed
-			"userUid": "1000",
-			"userGid": "1000",
-			"upgradePackages": "true"
-		},
-        "ghcr.io/symbolics/devcontainer-features/sbcl:latest": {"make_slim": false},
-        "ghcr.io/symbolics/devcontainer-features/quicklisp:latest": {"make_slim": false},
-        "ghcr.io/symbolics/devcontainer-features/aclrepl:latest": {"make_slim": false},
-		"ghcr.io/symbolics/devcontainer-features/jupyter:latest": {}
-    },
-    // Use base images default CMD.
-	"overrideCommand": false,
-	// Configure tool-specific properties.
-	"customizations": {
-		// Configure properties specific to VS Code.
-		"vscode": {
-			// Set *default* container specific settings.json values on container create.
-			"settings": {
-				"python.defaultInterpreterPath": "/opt/conda/bin/python"
-			},
-			// Add the IDs of extensions you want installed when the container is created.
-			"extensions": ["ms-python.python", "ms-toolsai.jupyter"]
-		}
+{
+  "name": "cl-jupyter-image - Lisp-Stat Dev",
+  "image": "ghcr.io/lisp-stat/ls-dev:latest",
+  "containerUser": "vscode",
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "github.copilot",
+        "github.copilot-chat"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
     }
+  }
 }
